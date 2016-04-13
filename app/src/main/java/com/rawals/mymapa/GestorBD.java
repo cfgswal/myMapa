@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.v7.app.AppCompatActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,9 +13,13 @@ import java.util.List;
 /**
  * Created by Ramon on 31/3/16.
  */
-public class GestorBD {
+public class GestorBD extends AppCompatActivity {
     private SQLiteDatabase bd = null;
     private BDHelper helper = null;
+
+
+
+
 
     public GestorBD(Context context) {
         helper = new BDHelper(context, "carreras.sqlite", null, 1);
@@ -38,6 +43,7 @@ public class GestorBD {
             values.put("fecha", (String) c.getFecha());
             values.put("distancia", (String) c.getDistancia());
             values.put("duracion", (String) c.getDuracion());
+            values.put("polilinea", (String) c.getPolilinea());
 
 
 
@@ -48,10 +54,8 @@ public class GestorBD {
     public void borrarCarrera(carrera c) {
         if (bd.isOpen() && c != null) {
 
-            String tabla = "carreras";
-            String where = "fecha = ?";
-            CharSequence[] argumentoswhere = new CharSequence[]{c.getFecha()};
-            bd.delete(tabla, where, (String[]) argumentoswhere);
+            String[] args = new String[]{(String) c.getFecha()};
+            bd.execSQL("DELETE FROM carreras WHERE fecha=?", args);
         }
     }
 
@@ -61,8 +65,8 @@ public class GestorBD {
 
         if (bd.isOpen()) {
 
-            String tabla = "ruta";
-            String[] columnas = new String[]{"id", "fecha", "distancia", "duracion"};
+            String tabla = "carreras";
+            String[] columnas = new String[]{"id", "fecha", "distancia", "duracion","polilinea"};
             String where = "fecha = ?";
             String[] argumentoswhere = new String[]{nombre};
             String groupby = null;
@@ -78,6 +82,7 @@ public class GestorBD {
                 c.setFecha(c1.getString(1));
                 c.setDistancia(c1.getString(2));
                 c.setDuracion(c1.getString(3));
+                c.setPolilinea(c1.getString(4));
             }
         }
 
@@ -91,7 +96,7 @@ public class GestorBD {
         if (bd.isOpen()) {
 
             String tabla = "carreras";
-            String[] columnas = new String[]{"id", "fecha", "distancia", "duracion"};
+            String[] columnas = new String[]{"id", "fecha", "distancia", "duracion","polilinea"};
             String where = null; // "id = ?"
             String[] argumentoswhere = null; // = new String[] {"35"};
             String groupby = null;
@@ -106,7 +111,7 @@ public class GestorBD {
 
                 // Recorremos el cursor hasta que no haya más registros
                 do {
-                    carrera c = new carrera(c1.getString(1), c1.getString(2), c1.getString(3));   // El campo 0 es el ID
+                    carrera c = new carrera(c1.getString(1), c1.getString(2), c1.getString(3), c1.getString(4));   // El campo 0 es el ID
                     l.add(c);
                 } while (c1.moveToNext());
             }
@@ -117,7 +122,7 @@ public class GestorBD {
 
     private class BDHelper extends SQLiteOpenHelper {
 
-        private String tablaCarreras = "CREATE TABLE carreras ( id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, fecha TEXT, distancia TEXT, duracion TEXT);";
+        private String tablaCarreras = "CREATE TABLE carreras ( id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, fecha TEXT, distancia TEXT, duracion TEXT, polilinea TEXT);";
 
         public BDHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
             super(context, name, factory, version);

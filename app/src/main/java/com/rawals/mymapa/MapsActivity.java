@@ -27,6 +27,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.PolyUtil;
 
 import org.json.JSONObject;
 
@@ -35,9 +36,8 @@ import java.util.HashMap;
 import java.util.List;
 
 
-
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, View.OnClickListener, GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMyLocationChangeListener {
-
+    private PolyUtil polyUtil;
     private GoogleMap map;
     Button bmapa;
     Button bhibrido;
@@ -46,15 +46,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Button bparar;
     TextView textvel;
     TextView textdis;
+    String tipo = "";
 
      Chronometer cronometro;
      String time = "";
     String date = "dd-MM-yyyy HH:mm:ss";
+    String carrera="";
+
 
     private boolean needsInit = false;
     private Polyline polilinea;
     PolylineOptions po;
     private List<LatLng> list = new ArrayList<>();
+    private List<String> listString = new ArrayList<>();
     Location location = null;
     LatLng latLong = null;
     private boolean comenzar = false;
@@ -65,8 +69,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     JSONObject jDuration = null;
     List<List<HashMap<String, String>>> routes = new ArrayList<List<HashMap<String, String>>>();
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,6 +77,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
 
         bmapa = (Button) findViewById(R.id.bmapa);
         bhibrido = (Button) findViewById(R.id.bhibrido);
@@ -94,11 +97,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         biniciar.setOnClickListener(this);
         bparar.setOnClickListener(this);
 
+        tipo= getIntent().getStringExtra("tipo");
+
+
+
     }
 
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
+
 
 
         map = googleMap;
@@ -152,6 +161,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             location.getLongitude());
     //Recogemos las coordenadas en un arrayList
     list.add(latLong);
+    listString.add(String.valueOf(latLong));
 
     ruta();
 
@@ -199,6 +209,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     cad = cad.substring(0, 9);
                     String cad2 = String.valueOf((latLong.longitude));
                     cad2 = cad2.substring(0, 8);
+                String[] latLng = "-34.8799074,174.7565664".split(",");
+                double latitude = Double.parseDouble(latLng[0]);
+                double longitude = Double.parseDouble(latLng[1]);
 
                     this.map.addMarker(new MarkerOptions().position(latLong)
                             .title("INICIO:")
@@ -206,6 +219,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     + "\nLongitud: " + String.valueOf(cad2)));
 
                     list.add(latLong);
+                    listString.add(String.valueOf(latLong));
 
                     ruta();
 
@@ -219,17 +233,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 time =(minutos +" : "+segundos);
                 cronometro.setText(time);
 
-
                 latLong = new LatLng(map.getMyLocation().getLatitude(),
                         map.getMyLocation().getLongitude());
 
                 list.add(latLong);
+                String polilinea = polyUtil.encode(list);
+
+                listString.add(String.valueOf(latLong));
 
                 comenzar = false;
                 Intent intent = new Intent(MapsActivity.this,ResumenCarrera.class);
                 intent.putExtra("duracion",cronometro.getText());
                 intent.putExtra("date",date);
-                intent.putExtra("recorrido",po);
+                intent.putExtra("recorrido", po);
+                intent.putExtra("tipo",tipo);
+                intent.putExtra("polilinea",polilinea);
                 startActivity(intent);
                 break;
 
@@ -245,7 +263,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void ruta () {
-
 
 
         if (polilinea == null) {
@@ -286,5 +303,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         return super.onOptionsItemSelected(item);
     }
+
 
 }

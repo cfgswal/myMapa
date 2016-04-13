@@ -2,57 +2,38 @@ package com.rawals.mymapa;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+    Button b_bici;
+    Button b_andar;
+    Button b_correr;
+    String tipo = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        b_bici = (Button) findViewById(R.id.b_bici);
+        b_andar = (Button) findViewById(R.id.b_andar);
+        b_correr = (Button) findViewById(R.id.b_correr);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
+        b_bici.setOnClickListener(this);
+        b_correr.setOnClickListener(this);
+        b_andar.setOnClickListener(this);
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+
+
     }
 
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -76,30 +57,35 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
+
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
+    public void onClick(View v) {
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-            Intent intent = new Intent(this, MapsActivity.class);
-            startActivity(intent);
-        } else if (id == R.id.nav_slideshow) {
-            Intent intent = new Intent(this, ListarCarreras.class);
-            startActivity(intent);
-        } else if (id == R.id.nav_manage) {
+        switch (v.getId()) {
 
-        } else if (id == R.id.nav_share) {
+            case R.id.b_bici:
+                tipo = "Bici";
+                Intent intent = new Intent(MainActivity.this,MapsActivity.class);
+                intent.putExtra("tipo",tipo);
+                startActivity(intent);
 
-        } else if (id == R.id.nav_send) {
+                break;
+            case R.id.b_andar:
+                tipo = "Andar";
+                intent = new Intent(MainActivity.this,MapsActivity.class);
+                intent.putExtra("tipo",tipo);
+                startActivity(intent);
+
+                break;
+            case R.id.b_correr:
+                tipo = "Correr";
+                intent = new Intent(MainActivity.this,MapsActivity.class);
+                intent.putExtra("tipo",tipo);
+                startActivity(intent);
+
+            default:
+                break;
 
         }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
     }
 }
