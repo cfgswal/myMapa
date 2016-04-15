@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -28,7 +30,7 @@ public class CarreraList extends ActionBarActivity {
     private GestorBD gbd = null;
     carrera c = null;
 
-
+TextView texto;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,27 +45,33 @@ public class CarreraList extends ActionBarActivity {
         carreras = gestorbd.leerCarreras();
         gestorbd.cerrarBD();
 
-        ListView listView = (ListView) findViewById(R.id.listView);
+        if (carreras.size()!=0) {
+
+            ListView listView = (ListView) findViewById(R.id.listView);
 
 
-        listViewAdapter = new ListViewAdapter(this, carreras);
-        listView.setAdapter(listViewAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView adapterView, View view, int posicion, long l) {
-                c = carreras.get(posicion);
+            listViewAdapter = new ListViewAdapter(this, carreras);
+            listView.setAdapter(listViewAdapter);
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView adapterView, View view, int posicion, long l) {
+                    c = carreras.get(posicion);
 
-                com.setObjeto(c);
+                    com.setObjeto(c);
 
-                Intent ii = new Intent(getApplicationContext(), DetallesCarrera.class);
-                startActivity(ii);
-                finish();
-
-
-            }
-        });
+                    Intent ii = new Intent(getApplicationContext(), DetallesCarrera.class);
+                    startActivity(ii);
+                    finish();
 
 
+                }
+            });
+
+        }else{
+            texto = (TextView) findViewById(R.id.texto);
+                    texto.setText("No hay ninguna carrera guardada");
+
+        }
 
     }
 
@@ -118,5 +126,25 @@ public class CarreraList extends ActionBarActivity {
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        //Menu de los 3 puntitos
+        getMenuInflater().inflate(R.menu.main, menu);
 
+        return (super.onCreateOptionsMenu(menu));
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        //Menu de las opciones de los 3 puntitos
+        if (item.getItemId() == R.id.legal) {
+            startActivity(new Intent(this, LegalNoticesActivity.class));
+
+            return(true);
+        }
+
+        return(super.onOptionsItemSelected(item));
+    }
 }
